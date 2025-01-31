@@ -9,35 +9,46 @@ import SwiftUI
 
 struct AsyncImageView: View {
     let url: String?
-    
+    @State private var image: UIImage?
+
     var body: some View {
-        if let urlString = url, let imageURL = URL(string: urlString) {
-            AsyncImage(url: imageURL) { phase in
-                switch phase {
-                case .success(let image):
-                    image.resizable()
-                        .scaledToFill()
-                case .failure(_):
-                    placeholderImage
-                case .empty:
-                    ProgressView()
-                @unknown default:
-                    placeholderImage
-                }
+        Group {
+            if let image = image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                ProgressView()
+                    .onAppear {
+                        Task {
+                            await loadImage()
+                        }
+                    }
             }
-            .frame(width: 50, height: 50)
-            .cornerRadius(8)
-        } else {
-            placeholderImage
         }
+        .frame(width: 50, height: 50)
+        .cornerRadius(8)
     }
 
-    private var placeholderImage: some View {
-        Image(systemName: "photo")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 50, height: 50)
-            .foregroundColor(.gray)
+    private func loadImage() async {
+        guard let urlString = url, let imageURL = URL(string: urlString) else { return }
+        
+        let cacheKey = urlString.replacingOccurrences(of: "/", with: "_")
+
+        if let cachedImage = ImageCache.shared.getImage(forKey: cacheKey) {
+            image = cachedImage
+            return
+        }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: imageURL)
+            if let downloadedImage = UIImage(data: data) {
+                ImageCache.shared.saveImage(downloadedImage, forKey: cacheKey)
+                await MainActor.run { image = downloadedImage }
+            }
+        } catch {
+            print("Image loading failed: \(error.localizedDescription)")
+        }
     }
 }
 

@@ -15,7 +15,6 @@ struct RecipeListView: View {
             VStack {
                 if viewModel.isLoading {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
                         .padding()
                 } else if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
