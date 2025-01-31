@@ -12,8 +12,8 @@ class RecipeViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
-    private let apiURL = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
-
+    private let apiURL = API.allRecipesURL
+    
     func fetchRecipes() {
         isLoading = true
         errorMessage = nil
@@ -27,7 +27,7 @@ class RecipeViewModel: ObservableObject {
 
             guard let data = data, error == nil else {
                 DispatchQueue.main.async {
-                    self.errorMessage = "Network error. Please try again."
+                    self.errorMessage = ErrorMessages.networkError
                 }
                 return
             }
@@ -36,14 +36,14 @@ class RecipeViewModel: ObservableObject {
                 let decodedData = try JSONDecoder().decode(RecipeResponse.self, from: data)
                 DispatchQueue.main.async {
                     if decodedData.recipes.isEmpty {
-                        self.errorMessage = "No recipes available."
+                        self.errorMessage = ErrorMessages.emptyData
                     } else {
                         self.recipes = decodedData.recipes
                     }
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.errorMessage = "Malformed data. Please try again."
+                    self.errorMessage = ErrorMessages.malformedData
                 }
             }
         }
