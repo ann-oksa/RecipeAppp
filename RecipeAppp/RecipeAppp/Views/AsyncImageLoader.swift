@@ -18,25 +18,26 @@ struct AsyncImageView: View {
                     image.resizable()
                         .scaledToFill()
                 case .failure(_):
-                    Image(systemName: "photo")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.gray)
+                    placeholderImage
                 case .empty:
                     ProgressView()
                 @unknown default:
-                    EmptyView()
+                    placeholderImage
                 }
             }
             .frame(width: 50, height: 50)
             .cornerRadius(8)
         } else {
-            Image(systemName: "photo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 50, height: 50)
-                .foregroundColor(.gray)
+            placeholderImage
         }
+    }
+
+    private var placeholderImage: some View {
+        Image(systemName: "photo")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 50, height: 50)
+            .foregroundColor(.gray)
     }
 }
 

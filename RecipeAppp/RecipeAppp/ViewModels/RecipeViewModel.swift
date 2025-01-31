@@ -5,7 +5,6 @@
 //  Created by Hanna on 1/31/2025.
 //
 import Foundation
-import SwiftUI
 
 @MainActor
 class RecipeViewModel: ObservableObject {
@@ -24,7 +23,12 @@ class RecipeViewModel: ObservableObject {
         }
 
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await URLSession.shared.data(from: url)
+
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                throw URLError(.badServerResponse)
+            }
+
             let decodedData = try JSONDecoder().decode(RecipeResponse.self, from: data)
 
             if decodedData.recipes.isEmpty {
