@@ -14,7 +14,7 @@ final class ImageCache {
     private let fileManager = FileManager.default
     private let cacheDirectory: URL?
 
-    private init() {
+    init() {
         cacheDirectory = try? fileManager.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
     }
 

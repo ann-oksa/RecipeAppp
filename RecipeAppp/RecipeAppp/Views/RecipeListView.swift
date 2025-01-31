@@ -42,7 +42,6 @@ struct RecipeListView: View {
                     .listStyle(PlainListStyle())
                 }
 
-                // Fixed buttons at the bottom
                 HStack {
                     fetchButton(title: "All Recipes", url: API.allRecipesURL)
                     fetchButton(title: "Broken Data", url: API.malformedDataURL)
