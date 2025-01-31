@@ -12,7 +12,7 @@ class RecipeViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
-    private let apiURL = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json" // Change URL to test different endpoints
+    private let apiURL = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
 
     func fetchRecipes() {
         isLoading = true
